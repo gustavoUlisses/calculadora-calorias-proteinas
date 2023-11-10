@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Calorias e Proteinas</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
+    *,
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+    }
+
+    body {
+      background: #D6D4D0;
+      font-family: 'Montserrat', sans-serif;
+      color: rgb(0, 0, 0);
+    }
+
+    .container {
+      width: 550px;
+      margin: 0 auto;
+    }
+
+    header {
+      width: 100%;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-size: 16px;
+      font-family: 'Montserrat Semibold', sans-serif;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      background: #D6D4D0;
+      width: 100%;
+      height: 45px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      font-family: 'Montserrat', sans-serif;
+      color: rgb(0, 0, 0);
+      border-color: #000000;
+      font-size: 14px;
+      padding: 0 15px;
+      outline: none;
+      transition: border-color 0.2s ease-in;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #494949;
+    }
+
+    .form-group button {
+      background-image: linear-gradient(-90deg, #000000 0%, #000000 100%);
+      border-radius: 5px;
+      border: 0;
+      height: 45px;
+      color: #eeeeee;
+      font-weight: 700;
+      font-size: 16px;
+      font-family: 'Montserrat Bold', sans-serif;
+      cursor: pointer;
+    }
+
+    .form-group:last-child {
+      margin-top: 40px;
+    }
+
+    .result-container {
+      margin-top: 50px;
+    }
+
+    .result-content {
+      margin-top: 10px;
+      background: #ffffff;
+      border-radius: 5px;
+      padding: 15px;
+    }
+
+    .result-content ul {
+      list-style: none;
+    }
+
+    .result-content ul li {
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Montserrat Bold', sans-serif;
+      line-height: 30px;
+    }
+
+    .result-content ul li strong {
+      color: #818181;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content">
+    <form id="form">
+      <div class="form-group">
+        <label for="gender">Seu sexo</label>
+        <select id="gender">
+          <option value="male">Masculino</option>
+          <option value="female">Feminino</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="age">Sua idade</label>
+        <input type="number" id="age" />
+      </div>
+      <div class="form-group">
+        <label for="weight">Seu peso</label>
+        <input type="number" id="weight" />
+      </div>
+      <div class="form-group">
+        <label for="height">Sua altura</label>
+        <input type="number" id="height" />
+      </div>
+      <div class="form-group">
+        <label for="activity_level">Seu nível de atividade física</label>
+        <select id="activity_level">
+          <option value="1.2">Sedentário</option>
+          <option value="1.375">Pouca atividade</option>
+          <option value="1.55">Atividade moderada</option>
+          <option value="1.725">Atividade intensa</option>
+          <option value="1.9">Atividade muito intensa</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit">Calcular!</button>
+      </div>
+    </form>
+    <div class="result-container" id="result" ></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+
+    form.addEventListener('submit', handleSubmit);
+
+    function calculateProtein(weight) {
+      const proteinPerKg = 0.8;
+      const recommendedProtein = weight * proteinPerKg;
+      return Math.round(recommendedProtein);
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+
+      const gender = getSelectedValue('gender');
+      const age = getInputNumberValue('age');
+      const weight = getInputNumberValue('weight');
+      const height = getInputNumberValue('height');
+      const activityLevel = getInputNumberValue('activity_level');
+
+      const tmb = Math.round(
+        gender === 'female'
+          ? (655 + (9.6 * weight) + (1.8 * height) - (4.7 * age))
+          : (66 + (13.7 * weight) + (5 * height) - (6.8 * age))
+      );
+      const maintenance = Math.round(tmb * Number(activityLevel));
+      const loseWeight = maintenance - 450;
+      const gainWeight = maintenance + 450;
+
+      const protein = calculateProtein(weight);
+
+      const layout = `
+        <h2>Aqui está o resultado:</h2>
+        
+        <div class="result-content">
+          <ul>
+            <li>
+              Seu metabolismo basal é de <strong>${tmb} calorias</strong>.
+            </li>
+            <li>
+              Para manter o seu peso você precisa consumir em média <strong>${maintenance} calorias</strong>.
+            </li>
+            <li>
+              Para perder peso você precisa consumir em média <strong>${loseWeight} calorias</strong>.
+            </li>
+            <li>
+              Para ganhar peso você precisa consumir em média <strong>${gainWeight} calorias</strong>.
+            </li>
+            <li>
+              A recomendação diária de proteínas é de <strong>${protein} gramas</strong>.
+            </li>
+          </ul>
+        </div>
+      `;
+
+      const result = document.getElementById('result');
+      result.innerHTML = layout;
+    }
+
+    function getSelectedValue(id) {
+      const select = document.getElementById(id);
+      return select.options[select.selectedIndex].value;
+    }
+
+    function getInputNumberValue(id) {
+      return Number(document.getElementById(id).value);
+    }
+  </script>
+
+</body>
+</html>
